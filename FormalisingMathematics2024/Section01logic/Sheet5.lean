@@ -25,41 +25,98 @@ and also the following two new tactics:
 variable (P Q R S : Prop)
 
 example : P ↔ P := by
-  sorry
+  rfl
   done
 
 example : (P ↔ Q) → (Q ↔ P) := by
-  sorry
+  intro ePQ
+  apply ePQ.symm
   done
 
 example : (P ↔ Q) ↔ (Q ↔ P) := by
-  sorry
+  apply Iff.intro
+  intro ePQ
+  apply ePQ.symm
+  intro eQP
+  apply eQP.symm
   done
 
 example : (P ↔ Q) → (Q ↔ R) → (P ↔ R) := by
-  sorry
+  intro ePQ eQR
+  constructor
+  rw [ePQ, eQR]
+  intro h
+  apply h
+  rw [← eQR, ← ePQ]
+  intro h
+  apply h
   done
 
 example : P ∧ Q ↔ Q ∧ P := by
-  sorry
+  apply Iff.intro
+  intro cPQ
+  constructor
+  exact cPQ.right
+  exact cPQ.left
+  intro cQP
+  constructor
+  exact cQP.right
+  exact cQP.left
   done
 
 example : (P ∧ Q) ∧ R ↔ P ∧ Q ∧ R := by
-  sorry
+  apply Iff.intro
+  intro cPQR
+  constructor
+  exact cPQR.left.left
+  constructor
+  exact cPQR.left.right
+  exact cPQR.right
+  intro cPQR
+  constructor
+  constructor
+  exact cPQR.left
+  exact cPQR.right.left
+  exact cPQR.right.right
   done
 
 example : P ↔ P ∧ True := by
-  sorry
+  apply Iff.intro
+  intro h
+  constructor
+  exact h
+  triv
+  intro h
+  exact h.left
   done
 
 example : False ↔ P ∧ False := by
-  sorry
+  apply Iff.intro
+  intro h
+  exfalso
+  exact h
+  intro h
+  exfalso
+  exact h.right
   done
 
 example : (P ↔ Q) → (R ↔ S) → (P ∧ R ↔ Q ∧ S) := by
-  sorry
+  intro hPQ hRS
+  apply Iff.intro
+  intro cPR
+  rw [← hPQ, ← hRS]
+  exact cPR
+  intro cQS
+  rw [hPQ, hRS]
+  exact cQS
   done
 
 example : ¬(P ↔ ¬P) := by
-  sorry
+  intro h
+  have h1 : (P → ¬P) := h.mp
+  have h2 : (¬P → P) := h.mpr
+  by_cases p : P
+  exact h1 p p
+  have p : P := h2 p
+  exact h1 p p
   done
