@@ -71,19 +71,25 @@ theorem comp_eval (f : X → Y) (g : Y → Z) (x : X) : (g ∘ f) x = g (f x) :=
 -- Why did we just prove all those theorems with a proof
 -- saying "it's true by definition"? Because now, if we want,
 -- we can `rw` the theorems to replace things by their definitions.
-example : Injective (id : X → X) :=
-  by-- you can start with `rw injective_def` if you like,
+example : Injective (id : X → X) := by
+  -- you can start with `rw injective_def` if you like,
   -- and later you can `rw id_eval`, although remember that `rw` doesn't
   -- work under binders like `∀`, so use `intro` first.
-  sorry
+  rw [injective_def]
+  intro a b h
+  rw [id_eval, id_eval] at h
+  exact h
 
 example : Surjective (id : X → X) := by
-  sorry
+  rw [surjective_def]
+  intro b
+  use b
+  rw [id_eval]
 
 -- Theorem: if f : X → Y and g : Y → Z are injective,
 -- then so is g ∘ f
-example (f : X → Y) (g : Y → Z) (hf : Injective f) (hg : Injective g) : Injective (g ∘ f) :=
-  by
+example (f : X → Y) (g : Y → Z) (hf : Injective f) (hg : Injective g)
+: Injective (g ∘ f) := by
   -- By definition of injectivity,
   -- We need to show that if a,b are in X and
   -- (g∘f)(a)=(g∘f)(b), then a=b.
@@ -129,10 +135,24 @@ example (f : X → Y) (g : Y → Z) (hf : Surjective f) (hg : Surjective g) : Su
 
 -- This is a question on the IUM (Imperial introduction to proof course) function problem sheet
 example (f : X → Y) (g : Y → Z) : Injective (g ∘ f) → Injective f := by
-  sorry
+  intro gf_inj
+  rw [injective_def] at *
+  intro a b
+  specialize gf_inj a b
+  intro fa_is_fb
+  apply gf_inj
+  simp
+  rw [fa_is_fb]
 
 -- This is another one
 example (f : X → Y) (g : Y → Z) : Surjective (g ∘ f) → Surjective g := by
-  sorry
+  intro gf_epi
+  rw [surjective_def] at *
+  intro b
+  specialize gf_epi b
+  obtain ⟨a, ha⟩ := gf_epi
+  use f a
+  simp at ha
+  exact ha
 
 end Section3sheet1

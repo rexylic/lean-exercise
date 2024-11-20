@@ -12,9 +12,25 @@ namespace Section2sheet5
 
 open Section2sheet3solutions
 
+lemma neg_in_abs {a : ℝ} : |a| = |-a| := by exact (abs_neg a).symm
+lemma neg_in_abs_lt {a b : ℝ} : |a| < b ↔ |-a| < b := by rw [neg_in_abs]
+
 -- you can maybe do this one now
-theorem tendsTo_neg {a : ℕ → ℝ} {t : ℝ} (ha : TendsTo a t) : TendsTo (fun n ↦ -a n) (-t) := by
-  sorry
+theorem tendsTo_neg {a : ℕ → ℝ} {t : ℝ} (ha : TendsTo a t)
+  : TendsTo (fun n ↦ -a n) (-t) := by
+  rw [tendsTo_def] at *
+  intro ε hε
+  specialize ha ε hε
+  cases' ha with B h
+  use B
+  intro n
+  specialize h n
+  intro hBltN
+  specialize h hBltN
+  rw [neg_in_abs_lt]
+  ring_nf
+  exact h
+  done
 
 /-
 `tendsTo_add` is the next challenge. In a few weeks' time I'll
@@ -56,6 +72,6 @@ tends to `t - u`. -/
 theorem tendsTo_sub {a b : ℕ → ℝ} {t u : ℝ} (ha : TendsTo a t) (hb : TendsTo b u) :
     TendsTo (fun n ↦ a n - b n) (t - u) := by
   -- this one follows without too much trouble from earlier results.
-  sorry
+  exact tendsTo_add ha $ tendsTo_neg hb
 
 end Section2sheet5
