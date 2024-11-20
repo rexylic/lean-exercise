@@ -139,41 +139,39 @@ So the next level is asking you prove that `P → (Q → P)`.
 
 -/
 example : P → Q → P := by
-  intro P
-  intro Q
-  exact P
+  intro hP
+  intro hQ
+  assumption
   done
 
 /-- If we know `P`, and we also know `P → Q`, we can deduce `Q`.
 This is called "Modus Ponens" by logicians. -/
 example : P → (P → Q) → Q := by
-  intro P
-  intro h
-  apply h
-  exact P
+  intro hP hPQ
+  apply hPQ
+  exact hP
   done
 
 /-- `→` is transitive. That is, if `P → Q` and `Q → R` are true, then
   so is `P → R`. -/
 example : (P → Q) → (Q → R) → P → R := by
-  intro hPQ
-  intro hQR
-  intro P
+  intro hPQ hQR hP
   apply hQR
   apply hPQ
-  exact P
+  exact hP
   done
 
 -- If `h : P → Q → R` with goal `⊢ R` and you `apply h`, you'll get
 -- two goals! Note that tactics operate on only the first goal.
 example : (P → Q → R) → (P → Q) → P → R := by
-  intro hPQR
-  intro hPQ
-  intro P
+  intro hPQR hPQ hP
   apply hPQR
-  exact P
-  apply hPQ
-  exact P
+  {
+    exact hP
+  }
+  {
+    exact hPQ hP
+  }
   done
 
 /-
@@ -188,39 +186,51 @@ in this section, where you'll learn some more tactics.
 variable (S T : Prop)
 
 example : (P → R) → (S → Q) → (R → T) → (Q → R) → S → T := by
-  intro hPR
-  intro hSQ
-  intro hRT
-  intro hQR
-  intro hS
+  intro hPR hSQ hRT hQR hS
   apply hRT
+  clear hPR
   apply hQR
   apply hSQ
   exact hS
   done
 
 example : (P → Q) → ((P → Q) → P) → Q := by
-  intro hPQ
-  intro hPQP
+  intro hPQ hPQP
   apply hPQ
   apply hPQP
-  apply hPQ
+  exact hPQ
   done
 
 example : ((P → Q) → R) → ((Q → R) → P) → ((R → P) → Q) → P := by
-  sorry
+  intro hPQR hQRP hRPQ
+  apply hQRP
+  intro hQ
+  apply hPQR
+  intro hP
+  exact hQ
   done
 
 example : ((Q → P) → P) → (Q → R) → (R → P) → P := by
-  sorry
+  intro hQPP hQR hRP
+  apply h
+  intro hQ
+  apply hQPP
   done
 
 example : (((P → Q) → Q) → Q) → P → Q := by
-  sorry
+  intro hPQQQ hP
+  apply hPQQQ
+  intro hPQ
+  exact hPQ hP
   done
 
 example :
     (((P → Q → Q) → (P → Q) → Q) → R) →
       ((((P → P) → Q) → P → P → Q) → R) → (((P → P → Q) → (P → P) → Q) → R) → R := by
-  sorry
+  intro hR1 hR2 hR3
+  apply hR2
+  intro hPPQ hP1 hP2
+  apply hPPQ
+  intro hP3
+  exact hP1
   done

@@ -27,134 +27,85 @@ and also the following tactics
 variable (P Q R S : Prop)
 
 example : P → P ∨ Q := by
-  apply Or.intro_left
+  intro hP
+  left
+  exact hP
   done
 
 example : Q → P ∨ Q := by
-  apply Or.intro_right
+  intro hP
+  right
+  exact hP
   done
 
 example : P ∨ Q → (P → R) → (Q → R) → R := by
-  intro dPQ
-  cases' dPQ with hP hQ
-  intro hPR hQR
-  apply hPR hP
-  intro hPR hQR
-  apply hQR hQ
+  intro hPoQ hPR hQR
+  cases' hPoQ with hP hQ
+  exact hPR hP
+  exact hQR hQ
   done
 
 -- symmetry of `or`
 example : P ∨ Q → Q ∨ P := by
-  intro dPQ
-  cases' dPQ with hP hQ
-  apply Or.inr
-  exact hP
-  apply Or.inl
-  exact hQ
+  intro hPoQ
+  cases' hPoQ with hP hQ
+  right; exact hP
+  left; exact hQ
   done
 
 -- associativity of `or`
 example : (P ∨ Q) ∨ R ↔ P ∨ Q ∨ R := by
-  apply Iff.intro
-  intro dPQR
-  cases' dPQR with dPQ hR
-  cases' dPQ with hP hQ
-  apply Or.inl
-  exact hP
-  apply Or.inr
-  apply Or.inl
-  exact hQ
-  apply Or.inr
-  apply Or.inr
-  exact hR
-  intro dPQR
-  cases' dPQR with hPQR hR
-  apply Or.inl
-  apply Or.inl
-  exact hPQR
-  cases' hR with hQ hR
-  apply Or.inl
-  apply Or.inr
-  exact hQ
-  apply Or.inr
-  exact hR
-  done
+  constructor
+  · intro h1
+    cases' h1 with hPQ hR
+    · cases' hPQ with hP hQ
+      · left; exact hP
+      · right; left; exact hQ
+    · right; right; exact hR
+  · intro h2
+    cases' h2 with hP hQR
+    · left; left; exact hP
+    · cases' hQR with hQ hR
+      · left; right; exact hQ
+      · right; exact hR
 
 example : (P → R) → (Q → S) → P ∨ Q → R ∨ S := by
-  intro hPR hQS dPQ
-  cases' dPQ with hP hQ
-  apply Or.inl
-  apply hPR hP
-  apply hQS at hQ
-  apply Or.inr
-  exact hQ
-  done
+  intro hPR hQS hPoQ
+  cases' hPoQ with hP hQ
+  · left; exact hPR hP
+  · right; exact hQS hQ
 
 example : (P → Q) → P ∨ R → Q ∨ R := by
-  intro hPQ dPR
-  cases' dPR with hP hR
-  apply Or.inl
-  apply hPQ hP
-  apply Or.inr
-  exact hR
-  done
+  intro hPQ hPoR
+  cases' hPoR with hP hR
+  · left; exact hPQ hP
+  · right; exact hR
 
 example : (P ↔ R) → (Q ↔ S) → (P ∨ Q ↔ R ∨ S) := by
-  intro hPQ hQS
-  apply Iff.intro
-  intro dPQ
-  cases' dPQ with hP hQ
-  apply Or.inl
-  apply hPQ.1 hP
-  apply Or.inr
-  apply hQS.1 hQ
-  intro dRS
-  cases' dRS with hR hS
-  apply Or.inl
-  apply hPQ.2 hR
-  apply Or.inr
-  apply hQS.2 hS
+  intros ePR eQS
+  rw [ePR, eQS]
   done
 
 -- de Morgan's laws
 example : ¬(P ∨ Q) ↔ ¬P ∧ ¬Q := by
-  apply Iff.intro
-  intro hPQ
-  apply And.intro
-  intro hP
-  apply hPQ
-  apply Or.inl
-  exact hP
-  intro hQ
-  apply hPQ
-  apply Or.inr
-  exact hQ
-  intro hPQ
-  intro dPQ
-  cases' dPQ with hP hQ
-  apply hPQ.left hP
-  apply hPQ.right hQ
+  constructor
+  · intro h1; constructor
+    · intro h2; apply h1; left; exact h2
+    · intro h2; apply h1; right; exact h2
+  · intro h1; cases' h1 with hnP hnQ
+    intro h2; cases' h2 with hP hQ
+    · exact hnP hP
+    · exact hnQ hQ
   done
 
 example : ¬(P ∧ Q) ↔ ¬P ∨ ¬Q := by
-  apply Iff.intro
-  intro hPQ
-  by_cases hP : P
-  by_cases hQ : Q
-  exfalso
-  apply hPQ
   constructor
-  exact hP
-  exact hQ
-  apply Or.inr
-  exact hQ
-  apply Or.inl
-  exact hP
-  intro hPQ
-  intro dPQ
-  cases' hPQ with hP hQ
-  apply hP
-  exact dPQ.left
-  apply hQ
-  exact dPQ.right
+  · intro h1; by_cases hP: P
+    · right; intro hQ; apply h1; constructor
+      · exact hP
+      · exact hQ
+    · left; exact hP
+  · intro h2 h3; cases' h2 with hnP hnQ
+    · cases' h3 with hP _; exact hnP hP
+    · cases' h3 with _ hQ; exact hnQ hQ
   done

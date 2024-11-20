@@ -28,81 +28,56 @@ example : P ↔ P := by
   rfl
   done
 
-example : (P ↔ Q) → (Q ↔ P) := by
-  intro ePQ
-  apply ePQ.symm
+lemma equiv_refl : (P ↔ Q) → (Q ↔ P) := by
+  intro hPeQ
+  rw [hPeQ]
   done
 
 example : (P ↔ Q) ↔ (Q ↔ P) := by
-  apply Iff.intro
-  intro ePQ
-  apply ePQ.symm
-  intro eQP
-  apply eQP.symm
+  constructor
+  apply equiv_refl
+  apply equiv_refl
   done
 
 example : (P ↔ Q) → (Q ↔ R) → (P ↔ R) := by
   intro ePQ eQR
-  constructor
-  rw [ePQ, eQR]
-  intro h
-  apply h
-  rw [← eQR, ← ePQ]
-  intro h
-  apply h
+  rw [ePQ]
+  exact eQR
   done
 
 example : P ∧ Q ↔ Q ∧ P := by
-  apply Iff.intro
-  intro cPQ
-  constructor
-  exact cPQ.right
-  exact cPQ.left
-  intro cQP
-  constructor
-  exact cQP.right
-  exact cQP.left
+  tauto
   done
 
 example : (P ∧ Q) ∧ R ↔ P ∧ Q ∧ R := by
-  apply Iff.intro
-  intro cPQR
-  constructor
-  exact cPQR.left.left
-  constructor
-  exact cPQR.left.right
-  exact cPQR.right
-  intro cPQR
-  constructor
-  constructor
-  exact cPQR.left
-  exact cPQR.right.left
-  exact cPQR.right.right
+  tauto
   done
 
 example : P ↔ P ∧ True := by
-  apply Iff.intro
-  intro h
   constructor
-  exact h
+  intro hP
+  constructor
+  exact hP
   triv
-  intro h
-  exact h.left
+  intro hPT
+  cases' hPT with hP _
+  exact hP
   done
 
 example : False ↔ P ∧ False := by
-  apply Iff.intro
+  constructor
   intro h
   exfalso
   exact h
   intro h
   exfalso
-  exact h.right
+  cases' h with _ hF
+  exact hF
   done
 
 example : (P ↔ Q) → (R ↔ S) → (P ∧ R ↔ Q ∧ S) := by
   intro hPQ hRS
-  apply Iff.intro
+  constructor
   intro cPR
   rw [← hPQ, ← hRS]
   exact cPR
@@ -113,10 +88,10 @@ example : (P ↔ Q) → (R ↔ S) → (P ∧ R ↔ Q ∧ S) := by
 
 example : ¬(P ↔ ¬P) := by
   intro h
-  have h1 : (P → ¬P) := h.mp
-  have h2 : (¬P → P) := h.mpr
-  by_cases p : P
-  exact h1 p p
-  have p : P := h2 p
-  exact h1 p p
+  cases' h with h1 h2
+  by_cases hP : P
+  exact h1 hP hP
+  apply h1
+  exact h2 hP
+  exact h2 hP
   done

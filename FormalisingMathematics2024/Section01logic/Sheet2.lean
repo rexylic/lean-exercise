@@ -55,27 +55,20 @@ example : False → P := by
   done
 
 example : True → False → True → False → True → False := by
-  intro t
-  intro f
-  intro t'
-  intro f'
-  intro t''
-  exact f
+  intro t1 f1 t2 f2 t3
+  exact f1
   done
 
 example : P → (P → False) → False := by
-  intro p
-  intro hPF
+  intro hP hPF
   apply hPF
-  exact p
+  exact hP
   done
 
 example : (P → False) → P → Q := by
-  intro h
-  intro p
+  intro hPF hP
   exfalso
-  apply h
-  exact p
+  exact hPF hP
   done
 
 example : (True → False) → P := by

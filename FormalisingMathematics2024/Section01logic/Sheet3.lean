@@ -40,7 +40,7 @@ example : ¬True → False := by
 
 example : False → ¬True := by
   intro h
-  intro t
+  intro h2
   exact h
   done
 
@@ -62,15 +62,13 @@ example : False → ¬P := by
   done
 
 example : P → ¬P → False := by
-  intro hP
-  intro hPF
+  intro hP hPF
   apply hPF
   exact hP
   done
 
 example : P → ¬¬P := by
-  intro h1
-  intro h2
+  intro h1 h2
   apply h2
   exact h1
   done
@@ -95,11 +93,14 @@ example : ¬¬P → P := by
   done
 
 example : (¬Q → ¬P) → P → Q := by
-  intro h1 h2
-  by_cases hQ : Q
-  exact hQ
-  exfalso
-  apply h1 at hQ
-  apply hQ at h2
-  exact h2
+  intro hPQ hP
+  by_cases hQ: Q
+  {
+    exact hQ
+  }
+  {
+    apply hPQ at hQ
+    exfalso
+    exact hQ hP
+  }
   done
