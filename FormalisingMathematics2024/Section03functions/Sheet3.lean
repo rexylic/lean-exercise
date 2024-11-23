@@ -73,7 +73,9 @@ example : ¬∀ A B C : Type, ∀ (φ : A → B) (ψ : B → C), Injective (ψ �
 
 -- Below is another one. Let's make a sublemma first.
 theorem gf_surjective : Surjective (g ∘ f) := by
-  sorry
+  intro h
+  cases h
+  use X.a
 
 -- Another question from IUM
 example : ¬∀ A B C : Type, ∀ (φ : A → B) (ψ : B → C), Surjective (ψ ∘ φ) → Surjective φ := by
