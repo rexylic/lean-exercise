@@ -1,1 +1,4 @@
+**/.DS_Store
 /.lake/
+/lake-manifest.json
+/lean-toolchain
