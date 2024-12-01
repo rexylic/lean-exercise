@@ -35,22 +35,58 @@ variable (X : Type)
   (x y z : X)
 
 -- x,y,z are elements of `X` or, more precisely, terms of type `X`
-example : A ∪ A = A := by sorry
+example : A ∪ A = A := by
+  ext a; constructor
+  · intro h
+    simp at h
+    exact h
+  · intro h
+    left
+    exact h
 
-example : A ∩ A = A := by sorry
+example : A ∩ A = A := by
+  ext a; constructor
+  · rintro ⟨h,_⟩
+    exact h
+  · intro h
+    constructor <;> exact h
 
-example : A ∩ ∅ = ∅ := by sorry
+example : A ∩ ∅ = ∅ := by
+  ext a; constructor
+  · intro h
+    obtain ⟨_, h2⟩ := h
+    exact h2
+  · intro h
+    exfalso
+    exact h
 
-example : A ∪ univ = univ := by sorry
+example : A ∪ univ = univ := by
+  ext a; constructor
+  · intro h
+    cases' h with h1 h2 <;> trivial
+  · intro h
+    right
+    exact h
 
-example : A ⊆ B → B ⊆ A → A = B := by sorry
+example : A ⊆ B → B ⊆ A → A = B := by
+  intro hAB hBA
+  ext a; constructor
+  · intro h
+    exact hAB h
+  · intro h
+    exact hBA h
 
-example : A ∩ B = B ∩ A := by sorry
+example : A ∩ B = B ∩ A := by
+  ext a; constructor <;> intro h <;> aesop
 
-example : A ∩ (B ∩ C) = A ∩ B ∩ C := by sorry
+example : A ∩ (B ∩ C) = A ∩ B ∩ C := by
+  exact Eq.symm (inter_assoc A B C)
 
-example : A ∪ (B ∪ C) = A ∪ B ∪ C := by sorry
+example : A ∪ (B ∪ C) = A ∪ B ∪ C := by
+  exact Eq.symm (union_assoc A B C)
 
-example : A ∪ B ∩ C = (A ∪ B) ∩ (A ∪ C) := by sorry
+example : A ∪ B ∩ C = (A ∪ B) ∩ (A ∪ C) := by
+  exact union_inter_distrib_left A B C
 
-example : A ∩ (B ∪ C) = A ∩ B ∪ A ∩ C := by sorry
+example : A ∩ (B ∪ C) = A ∩ B ∪ A ∩ C := by
+  exact inter_union_distrib_left A B C

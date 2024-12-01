@@ -79,6 +79,8 @@ theorem gf_surjective : Surjective (g ∘ f) := by
 
 -- Another question from IUM
 example : ¬∀ A B C : Type, ∀ (φ : A → B) (ψ : B → C), Surjective (ψ ∘ φ) → Surjective φ := by
-  sorry
+  intro h
+  specialize h X Y Z f g gf_surjective Y.c
+  rintro
 
 end Section3sheet1

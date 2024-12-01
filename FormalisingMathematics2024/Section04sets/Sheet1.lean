@@ -79,18 +79,42 @@ Let's prove some theorems.
 
 -/
 
-example : A ⊆ A := by sorry
+example : A ⊆ A := by
+  rfl
 
-example : A ⊆ B → B ⊆ C → A ⊆ C := by sorry
+example : A ⊆ B → B ⊆ C → A ⊆ C := by
+  intro h1 h2 x h3
+  exact h2 $ h1 h3
 
-example : A ⊆ A ∪ B := by sorry
+example : A ⊆ A ∪ B := by
+  intro h1 h2
+  left
+  exact h2
 
-example : A ∩ B ⊆ A := by sorry
+example : A ∩ B ⊆ A := by
+  rintro x ⟨h1, _⟩
+  exact h1
 
-example : A ⊆ B → A ⊆ C → A ⊆ B ∩ C := by sorry
+example : A ⊆ B → A ⊆ C → A ⊆ B ∩ C := by
+  intro h1 h2 a h4
+  constructor
+  · exact h1 h4
+  · exact h2 h4
 
-example : B ⊆ A → C ⊆ A → B ∪ C ⊆ A := by sorry
+example : B ⊆ A → C ⊆ A → B ∪ C ⊆ A := by
+  rintro sBA sCA x (hB | hC)
+  · exact sBA hB
+  · exact sCA hC
 
-example : A ⊆ B → C ⊆ D → A ∪ C ⊆ B ∪ D := by sorry
+example : A ⊆ B → C ⊆ D → A ∪ C ⊆ B ∪ D := by
+  rintro sAB sCD x (hA | hC)
+  · left
+    exact sAB hA
+  · right
+    exact sCD hC
 
-example : A ⊆ B → C ⊆ D → A ∩ C ⊆ B ∩ D := by sorry
+example : A ⊆ B → C ⊆ D → A ∩ C ⊆ B ∩ D := by
+  rintro sAB sCD x ⟨hA, hC⟩
+  constructor
+  · exact sAB hA
+  · exact sCD hC

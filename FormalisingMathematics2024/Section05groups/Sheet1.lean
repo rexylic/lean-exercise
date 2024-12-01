@@ -43,7 +43,7 @@ example (g : G) : g⁻¹ * g = 1 :=
     to worry about it right now -- all that matters is that you have access
     to all the group axioms. This one is called `inv_mul_self g`.
 -/
-  inv_mul_self g
+  inv_mul_cancel g
 
 -- Why don't you use `exact?` to see the names of the other axioms
 -- of a group? Note that when `exact?` has run, you can click on
@@ -51,18 +51,18 @@ example (g : G) : g⁻¹ * g = 1 :=
 -- with the name of the axiom it found. Note also that you can instead *guess*
 -- the names of the axioms. For example what do you think the proof of `1 * a = a` is called?
 example (a b c : G) : a * b * c = a * (b * c) := by
-  sorry
+  exact mul_assoc a b c
 
 -- can be found with `library_search` if you didn't know the answer already
 example (a : G) : a * 1 = a := by
-  sorry
+  exact MulOneClass.mul_one a
 
 -- Can you guess the last two?
 example (a : G) : 1 * a = a := by
-  sorry
+  exact one_mul a
 
 example (a : G) : a * a⁻¹ = 1 := by
-  sorry
+  exact mul_inv_cancel a
 
 -- As well as the axioms, Lean has many other standard facts which are true
 -- in all groups. See if you can prove these from the axioms, or find them
@@ -71,26 +71,34 @@ example (a : G) : a * a⁻¹ = 1 := by
 variable (a b c : G)
 
 example : a⁻¹ * (a * b) = b := by
-  sorry
+  exact inv_mul_cancel_left a b
 
 example : a * (a⁻¹ * b) = b := by
-  sorry
+  exact mul_inv_cancel_left a b
 
 example {a b c : G} (h1 : b * a = 1) (h2 : a * c = 1) : b = c := by
   -- hint for this one if you're doing it from first principles: `b * (a * c) = (b * a) * c`
-  sorry
+  have h3 : b = a⁻¹ := by exact eq_inv_of_mul_eq_one_left h1
+  have h4 : a⁻¹ = c := by exact DivisionMonoid.inv_eq_of_mul a c h2
+  exact Eq.trans h3 h4
 
 example : a * b = 1 ↔ a⁻¹ = b := by
-  sorry
+  constructor
+  · intro h
+    have h1 : b = a⁻¹ := Eq.symm (DivisionMonoid.inv_eq_of_mul a b h)
+    exact Eq.symm h1
+  · rintro rfl
+    exact mul_inv_cancel a
 
 example : (1 : G)⁻¹ = 1 := by
-  sorry
+  rw [← mul_eq_one_iff_inv_eq, mul_one]
 
 example : a⁻¹⁻¹ = a := by
-  sorry
+  rw [← mul_eq_one_iff_inv_eq, inv_mul_cancel]
 
 example : (a * b)⁻¹ = b⁻¹ * a⁻¹ := by
-  sorry
+  rw [← mul_eq_one_iff_inv_eq, ← mul_assoc, mul_assoc a,
+  mul_inv_cancel, mul_one, mul_inv_cancel]
 
 /-
 
@@ -110,4 +118,4 @@ example : (b⁻¹ * a⁻¹)⁻¹ * 1⁻¹⁻¹ * b⁻¹ * (a⁻¹ * a⁻¹⁻¹�
 
 -- Try this trickier problem: if g^2=1 for all g in G, then G is abelian
 example (h : ∀ g : G, g * g = 1) : ∀ g h : G, g * h = h * g := by
-  sorry
+  intro x y

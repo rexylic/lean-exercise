@@ -63,6 +63,7 @@ example (H K : Subgroup G) : Subgroup G := H ⊓ K
 -- have type `Set G`, they have type `Subgroup G`. Lean
 -- is very pedantic!
 
+
 example (H K : Subgroup G) (a : G) : a ∈ H ⊓ K ↔ a ∈ H ∧ a ∈ K := by
   -- true by definition!
   rfl

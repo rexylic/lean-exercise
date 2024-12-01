@@ -37,8 +37,11 @@ example (a b : G) (ha : a ∈ H) (hb : b ∈ H) : a * b ∈ H := by
 
 example (a b c : G) (ha : a ∈ H) (hb : b ∈ H) (hc : c ∈ H) :
     a * b⁻¹ * 1 * (a * c) ∈ H := by
-  sorry
-
+  have hbi : b⁻¹ ∈ H := H.inv_mem hb
+  have h1 : a * b⁻¹ ∈ H := H.mul_mem ha hbi
+  have h2 : a * c ∈ H := H.mul_mem ha hc
+  simp
+  exact H.mul_mem h1 h2
 /-
 
 ## Lattice notation for sub-things
@@ -68,7 +71,9 @@ example (H K : Subgroup G) (a : G) : a ∈ H ⊓ K ↔ a ∈ H ∧ a ∈ K := by
 -- Note that `a ∈ H ⊔ K ↔ a ∈ H ∨ a ∈ K` is not true; only `←` is true.
 -- Take apart the `Or` and use `exact?` to find the relevant lemmas.
 example (H K : Subgroup G) (a : G) : a ∈ H ∨ a ∈ K → a ∈ H ⊔ K := by
-  sorry
+  rintro (hH | hK)
+  · exact Subgroup.mem_sup_left hH
+  · exact Subgroup.mem_sup_right hK
 
 end Subgroups
 
